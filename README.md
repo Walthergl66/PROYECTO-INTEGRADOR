@@ -19,7 +19,7 @@ Excel MDI enero-mayo 2026       enriquecimiento temporal   dim_geografia        
 
 | Ruta | Contenido |
 |---|---|
-| `src/etl/` | Generación demo y transformación a esquema estrella |
+| `src/etl/` | Transformación del Excel real a esquema estrella |
 | `src/analytics/eda.py` | Estadística descriptiva, KPIs y resultados exploratorios |
 | `src/models/` | Modelo predictivo de incidencia mensual y recomendaciones estratégicas |
 | `dashboard/` | App Streamlit ejecutiva con Plotly |
@@ -48,7 +48,7 @@ python src/models/prescriptivo.py
 streamlit run dashboard/app.py
 ```
 
-La app contiene seis vistas:
+La app contiene ocho vistas:
 
 - **Ejecutivo:** KPIs, evolución mensual, provincias críticas y resumen de decisión.
 - **Riesgo territorial:** índice 0-100 por provincia o cantón con semáforo Alto/Medio/Bajo.
@@ -84,6 +84,10 @@ Este repositorio complementa ese trabajo con una app reproducible, pipeline docu
 - **Alertas ejecutivas:** reglas automáticas que resaltan concentración territorial, predominio de arma de fuego, ocurrencia en espacios públicos y hora crítica.
 - **Índice de riesgo territorial:** score compuesto por volumen histórico, incidencia reciente, variación mensual, porcentaje de arma de fuego y porcentaje de lugar público.
 - **Simulador de escenarios:** permite estimar casos evitables ante reducciones hipotéticas de incidencia por provincia o cantón.
+
+## Documento del informe
+
+- `informe/INFORME_TECNICO_SAFEANALYTICS_EC.docx`
 
 ## Nota de datos
 
