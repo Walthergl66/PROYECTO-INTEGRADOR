@@ -3,6 +3,7 @@ from dashboard.tabs.caracterizacion import renderizar_caracterizacion
 from dashboard.tabs.datos import renderizar_datos
 from dashboard.tabs.ejecutivo import renderizar_ejecutivo
 from dashboard.tabs.geografico import renderizar_geografico
+from dashboard.tabs.metodologia import renderizar_metodologia
 from dashboard.tabs.predictivo import renderizar_predictivo
 from dashboard.tabs.riesgo import renderizar_riesgo
 from dashboard.tabs.simulador import renderizar_simulador
@@ -14,6 +15,7 @@ __all__ = [
     "renderizar_datos",
     "renderizar_ejecutivo",
     "renderizar_geografico",
+    "renderizar_metodologia",
     "renderizar_predictivo",
     "renderizar_riesgo",
     "renderizar_simulador",

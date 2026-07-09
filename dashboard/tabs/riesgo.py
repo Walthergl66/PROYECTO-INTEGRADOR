@@ -5,6 +5,11 @@ import streamlit as st
 from dashboard.theme import AMBAR, ROJO, TEAL
 
 
+def _es_lugar_publico(serie: pd.Series) -> pd.Series:
+    normalizada = serie.astype(str).str.normalize("NFKD").str.encode("ascii", errors="ignore").str.decode("ascii")
+    return normalizada.str.upper().eq("PUBLICO")
+
+
 def _normalizar(serie: pd.Series) -> pd.Series:
     rango = serie.max() - serie.min()
     if rango == 0:
@@ -17,7 +22,7 @@ def calcular_riesgo_territorial(df: pd.DataFrame, nivel: str = "provincia") -> p
     grupo = df.groupby(nivel).agg(
         total_homicidios=("total_homicidios", "sum"),
         pct_arma_fuego=("arma", lambda s: (s == "ARMA DE FUEGO").mean() * 100),
-        pct_lugar_publico=("tipo_lugar", lambda s: (s == "PÚBLICO").mean() * 100),
+        pct_lugar_publico=("tipo_lugar", lambda s: _es_lugar_publico(s).mean() * 100),
         hora_critica=("hora", lambda s: int(s.value_counts().idxmax())),
     )
     ultimo = df[df["mes"] == max_mes].groupby(nivel)["total_homicidios"].sum()

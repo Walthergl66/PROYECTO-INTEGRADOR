@@ -49,3 +49,10 @@ def renderizar_ejecutivo(df: pd.DataFrame, recomendaciones: pd.DataFrame) -> Non
 """,
             unsafe_allow_html=True,
         )
+
+    st.download_button(
+        "Descargar resumen ejecutivo CSV",
+        top.to_csv(index=False).encode("utf-8-sig"),
+        file_name="resumen_ejecutivo_safeanalytics.csv",
+        mime="text/csv",
+    )

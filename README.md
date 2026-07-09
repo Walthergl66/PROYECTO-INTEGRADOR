@@ -27,7 +27,8 @@ Excel MDI enero-mayo 2026       enriquecimiento temporal   dim_geografia        
 | `data/processed/` | Tablas listas para Power BI y Streamlit |
 | `reports/` | KPIs, métricas del modelo y recomendaciones |
 | `models/` | Modelo entrenado en formato `pkl` |
-| `informe/` | Guion de pitch para exposición ejecutiva |
+| `informe/` | Informe técnico, guion y presentación de defensa |
+| `docs/` | Explicación del proyecto y justificación del modelo predictivo |
 
 ## Reproducir el pipeline
 
@@ -48,7 +49,7 @@ python src/models/prescriptivo.py
 streamlit run dashboard/app.py
 ```
 
-La app contiene ocho vistas:
+La app contiene nueve vistas:
 
 - **Ejecutivo:** KPIs, evolución mensual, provincias críticas y resumen de decisión.
 - **Riesgo territorial:** índice 0-100 por provincia o cantón con semáforo Alto/Medio/Bajo.
@@ -58,6 +59,7 @@ La app contiene ocho vistas:
 - **Caracterización:** tipo de arma, sexo, edad, lugar y presunta motivación.
 - **Predictiva:** estimación mensual de incidencia por provincia y nivel de riesgo.
 - **Datos:** esquema estrella, calidad y descarga de tablas.
+- **Metodologia:** fuente, trazabilidad, modelo dimensional, alcance predictivo y control de calidad.
 
 ## Relación con el PBIX
 
@@ -88,6 +90,10 @@ Este repositorio complementa ese trabajo con una app reproducible, pipeline docu
 ## Documento del informe
 
 - `informe/INFORME_TECNICO_SAFEANALYTICS_EC.docx`
+- `informe/DEFENSA_SAFEANALYTICS_EC.pptx`
+- `informe/GUION_PITCH.md`
+- `docs/EXPLICACION_PROYECTO.md`
+- `docs/JUSTIFICACION_MODELO_PREDICTIVO.md`
 
 ## Nota de datos
 

@@ -2,6 +2,11 @@ import pandas as pd
 import streamlit as st
 
 
+def _es_lugar_publico(serie: pd.Series) -> pd.Series:
+    normalizada = serie.astype(str).str.normalize("NFKD").str.encode("ascii", errors="ignore").str.decode("ascii")
+    return normalizada.str.upper().eq("PUBLICO")
+
+
 def construir_alertas(df: pd.DataFrame) -> list[dict[str, str]]:
     total = max(int(df["total_homicidios"].sum()), 1)
     provincia_top = df["provincia"].value_counts().idxmax()
@@ -10,7 +15,7 @@ def construir_alertas(df: pd.DataFrame) -> list[dict[str, str]]:
     canton_pct = df["canton"].value_counts().iloc[0] / total * 100
     arma_fuego = (df["arma"] == "ARMA DE FUEGO").mean() * 100
     hora_top = int(df["hora"].value_counts().idxmax())
-    lugar_publico = (df["tipo_lugar"] == "PÚBLICO").mean() * 100
+    lugar_publico = _es_lugar_publico(df["tipo_lugar"]).mean() * 100
 
     alertas = []
     if provincia_pct >= 35:

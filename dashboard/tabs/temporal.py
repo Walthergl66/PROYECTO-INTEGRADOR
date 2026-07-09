@@ -19,24 +19,24 @@ def renderizar_temporal(df: pd.DataFrame) -> None:
     fig.update_layout(height=390)
     col1.plotly_chart(fig, width="stretch")
 
-    orden = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    dia = df.groupby("dia_semana", as_index=False)["total_homicidios"].sum()
-    dia["dia_semana"] = pd.Categorical(dia["dia_semana"], categories=orden, ordered=True)
-    dia = dia.sort_values("dia_semana")
+    orden = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"]
+    dia = df.groupby("dia_semana_nombre", as_index=False)["total_homicidios"].sum()
+    dia["dia_semana_nombre"] = pd.Categorical(dia["dia_semana_nombre"], categories=orden, ordered=True)
+    dia = dia.sort_values("dia_semana_nombre")
     fig = px.line(
         dia,
-        x="dia_semana",
+        x="dia_semana_nombre",
         y="total_homicidios",
         markers=True,
         title="Patron por dia de semana",
-        labels={"dia_semana": "", "total_homicidios": "Homicidios"},
+        labels={"dia_semana_nombre": "", "total_homicidios": "Homicidios"},
         color_discrete_sequence=[TEAL],
     )
     fig.update_layout(height=390)
     col2.plotly_chart(fig, width="stretch")
 
     matriz = df.pivot_table(
-        index="dia_semana",
+        index="dia_semana_nombre",
         columns="hora",
         values="total_homicidios",
         aggfunc="sum",

@@ -23,8 +23,32 @@ def cargar_base() -> pd.DataFrame:
     df = df.merge(delito, on="id_delito", how="left")
     df = df.merge(victima, on="id_victima", how="left")
     df["mes"] = df["fecha_infraccion"].dt.month
-    df["mes_nombre"] = df["fecha_infraccion"].dt.strftime("%b")
+    meses = {
+        1: "Enero",
+        2: "Febrero",
+        3: "Marzo",
+        4: "Abril",
+        5: "Mayo",
+        6: "Junio",
+        7: "Julio",
+        8: "Agosto",
+        9: "Septiembre",
+        10: "Octubre",
+        11: "Noviembre",
+        12: "Diciembre",
+    }
+    dias = {
+        "Monday": "Lunes",
+        "Tuesday": "Martes",
+        "Wednesday": "Miercoles",
+        "Thursday": "Jueves",
+        "Friday": "Viernes",
+        "Saturday": "Sabado",
+        "Sunday": "Domingo",
+    }
+    df["mes_nombre"] = df["mes"].map(meses)
     df["dia_semana"] = df["fecha_infraccion"].dt.day_name()
+    df["dia_semana_nombre"] = df["dia_semana"].map(dias)
     return df
 
 

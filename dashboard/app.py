@@ -23,6 +23,7 @@ from dashboard.tabs import (
     renderizar_datos,
     renderizar_ejecutivo,
     renderizar_geografico,
+    renderizar_metodologia,
     renderizar_predictivo,
     renderizar_riesgo,
     renderizar_simulador,
@@ -97,6 +98,7 @@ tabs = st.tabs(
         "Caracterizacion",
         "Predictiva",
         "Datos",
+        "Metodologia",
     ]
 )
 with tabs[0]:
@@ -115,3 +117,5 @@ with tabs[6]:
     renderizar_predictivo(df_f, metricas_modelo, recomendaciones[recomendaciones["provincia"].isin(provincias)])
 with tabs[7]:
     renderizar_datos(cargar_tablas())
+with tabs[8]:
+    renderizar_metodologia(metricas_modelo)
