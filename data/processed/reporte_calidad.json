@@ -1,0 +1,45 @@
+{
+  "fuente": "mdi_homicidiosintencionalse_pm_2026_enero_mayo.xlsx",
+  "registros": 3485,
+  "periodo": {
+    "inicio": "2026-01-01",
+    "fin": "2026-05-31"
+  },
+  "tablas_generadas": {
+    "fact_homicidios": {
+      "filas": 3485,
+      "columnas": 12
+    },
+    "dim_tiempo": {
+      "filas": 151,
+      "columnas": 9
+    },
+    "dim_geografia": {
+      "filas": 139,
+      "columnas": 10
+    },
+    "dim_delito": {
+      "filas": 254,
+      "columnas": 10
+    },
+    "dim_victima": {
+      "filas": 64,
+      "columnas": 9
+    }
+  },
+  "nulos_fact_pct": {
+    "id_homicidio": 0.0,
+    "id_fecha": 0.0,
+    "id_geografia": 0.0,
+    "id_delito": 0.0,
+    "id_victima": 0.0,
+    "fecha_infraccion": 0.0,
+    "hora": 0.0,
+    "franja_horaria": 0.0,
+    "edad_num": 2.75,
+    "latitud": 0.0,
+    "longitud": 0.0,
+    "total_homicidios": 0.0
+  },
+  "coordenadas_validas_pct": 100.0
+}

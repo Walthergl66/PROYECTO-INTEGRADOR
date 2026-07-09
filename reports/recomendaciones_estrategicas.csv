@@ -1,0 +1,24 @@
+﻿provincia,total_homicidios,cantones_afectados,pct_arma_fuego,pct_lugar_publico,homicidios_ultimo_mes,homicidios_mes_previo,variacion_mensual_pct,score_volumen,score_reciente,score_tendencia,indice_riesgo,nivel_riesgo,accion,recomendacion
+GUAYAS,1521,25,91.2,78.0,297,284.0,4.6,100.0,100.0,36.4,84.2,Alto,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+MANABÍ,471,20,92.6,71.8,123,105.0,17.1,30.78444297956493,41.21621621621622,44.73333333333333,45.9,Medio,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+PASTAZA,10,2,90.0,90.0,1,0.0,100.0,0.3955174686882004,0.0,100.0,38.2,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+BOLÍVAR,7,3,85.7,85.7,3,0.0,300.0,0.1977587343441002,0.6756756756756757,100.0,37.4,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+STO DGO DE LOS TSÁCHILAS,31,2,80.6,71.0,10,2.0,400.0,1.7798286090969018,3.040540540540541,100.0,36.5,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+EL ORO,432,10,85.6,68.1,73,84.0,-13.1,28.213579433091628,24.324324324324326,24.6,36.4,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+LOS RÍOS,409,13,91.7,61.4,72,79.0,-8.9,26.697429136453525,23.986486486486484,27.400000000000002,36.3,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+ORELLANA,41,3,92.7,82.9,12,7.0,71.4,2.4390243902439024,3.7162162162162162,80.93333333333334,35.5,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+MORONA SANTIAGO,10,5,70.0,70.0,3,1.0,200.0,0.3955174686882004,0.6756756756756757,100.0,34.3,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+AZUAY,22,3,59.1,72.7,8,2.0,300.0,1.186552406064601,2.364864864864865,100.0,34.1,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+CARCHI,8,3,37.5,75.0,4,2.0,100.0,0.26367831245880025,1.0135135135135136,100.0,31.6,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+SANTA ELENA,81,3,93.8,74.1,20,19.0,5.3,5.075807514831905,6.418918918918918,36.86666666666667,27.5,Bajo,Mantener monitoreo reforzado,Revisar horarios criticos y sostener seguimiento semanal de cantones afectados.
+ESMERALDAS,129,7,85.3,65.9,27,29.0,-6.9,8.239947264337507,8.783783783783784,28.733333333333334,25.9,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+PICHINCHA,121,6,59.5,72.7,20,19.0,5.3,7.712590639419907,6.418918918918918,36.86666666666667,25.0,Bajo,Priorizar intervencion,"Concentrar inteligencia territorial, patrullaje focalizado y control de armas."
+CHIMBORAZO,4,2,50.0,75.0,1,1.0,0.0,0.0,0.0,33.33333333333333,19.2,Bajo,Monitoreo preventivo,Mantener vigilancia situacional y activar alertas ante crecimiento mensual.
+NAPO,12,4,66.7,50.0,2,2.0,0.0,0.5273566249176005,0.33783783783783783,33.33333333333333,18.6,Bajo,Monitoreo preventivo,Mantener vigilancia situacional y activar alertas ante crecimiento mensual.
+LOJA,23,7,43.5,60.9,3,3.0,0.0,1.2524719841793013,0.6756756756756757,33.33333333333333,17.7,Bajo,Mantener monitoreo reforzado,Revisar horarios criticos y sostener seguimiento semanal de cantones afectados.
+CAÑAR,42,3,71.4,92.9,3,7.0,-57.1,2.5049439683586026,0.6756756756756757,0.0,17.6,Bajo,Mantener monitoreo reforzado,Revisar horarios criticos y sostener seguimiento semanal de cantones afectados.
+ZAMORA CHINCHIPE,4,3,100.0,75.0,1,2.0,-50.0,0.0,0.0,0.0,17.5,Bajo,Monitoreo preventivo,Mantener vigilancia situacional y activar alertas ante crecimiento mensual.
+SUCUMBÍOS,55,3,87.3,61.8,6,16.0,-62.5,3.3618984838497035,1.6891891891891893,0.0,16.6,Bajo,Mantener monitoreo reforzado,Revisar horarios criticos y sostener seguimiento semanal de cantones afectados.
+TUNGURAHUA,22,4,86.4,54.5,2,6.0,-66.7,1.186552406064601,0.33783783783783783,0.0,14.6,Bajo,Monitoreo preventivo,Mantener vigilancia situacional y activar alertas ante crecimiento mensual.
+COTOPAXI,17,6,29.4,23.5,4,4.0,0.0,0.8569545154911009,1.0135135135135136,33.33333333333333,12.5,Bajo,Monitoreo preventivo,Mantener vigilancia situacional y activar alertas ante crecimiento mensual.
+IMBABURA,13,2,53.8,46.2,1,3.0,-66.7,0.5932762030323006,0.0,0.0,10.2,Bajo,Monitoreo preventivo,Mantener vigilancia situacional y activar alertas ante crecimiento mensual.

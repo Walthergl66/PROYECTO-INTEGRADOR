@@ -1,0 +1,9 @@
+{
+  "modelo": "Baseline provincial ajustado por dia de semana y tendencia",
+  "objetivo": "homicidios diarios por provincia",
+  "registros_entrenamiento": 813,
+  "registros_prueba": 199,
+  "mae": 1.539,
+  "rmse": 2.621,
+  "nota": "Modelo exploratorio. Con cinco meses de datos reales debe usarse como senal de priorizacion, no como pronostico operativo definitivo."
+}

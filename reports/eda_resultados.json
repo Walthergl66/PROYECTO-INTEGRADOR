@@ -1,0 +1,60 @@
+{
+  "total_homicidios": 3485,
+  "provincias_afectadas": 23,
+  "cantones_afectados": 138,
+  "porcentaje_arma_fuego": 87.8,
+  "porcentaje_victimas_hombres": 90.93,
+  "edad_promedio": 31.6,
+  "provincia_mayor_incidencia": "GUAYAS",
+  "canton_mayor_incidencia": "GUAYAQUIL",
+  "hora_critica": 20,
+  "dia_mas_critico": "Saturday",
+  "serie_mensual": {
+    "1": 761,
+    "2": 684,
+    "3": 667,
+    "4": 677,
+    "5": 696
+  },
+  "top_provincias": {
+    "GUAYAS": 1521,
+    "MANABÍ": 471,
+    "EL ORO": 432,
+    "LOS RÍOS": 409,
+    "ESMERALDAS": 129,
+    "PICHINCHA": 121,
+    "SANTA ELENA": 81,
+    "SUCUMBÍOS": 55,
+    "CAÑAR": 42,
+    "ORELLANA": 41
+  },
+  "top_cantones": {
+    "GUAYAQUIL": 944,
+    "MACHALA": 193,
+    "DURÁN": 156,
+    "MANTA": 133,
+    "QUITO": 104,
+    "ESMERALDAS": 92,
+    "PORTOVIEJO": 80,
+    "QUEVEDO": 80,
+    "BABAHOYO": 70,
+    "MONTECRISTI": 60
+  },
+  "distribucion_armas": {
+    "ARMA DE FUEGO": 3060,
+    "ARMA BLANCA": 276,
+    "OTROS": 76,
+    "ARMA CONTUNDENTE": 42,
+    "CONSTRICTORA": 28,
+    "SUSTANCIAS": 3
+  },
+  "motivaciones": {
+    "DELINCUENCIA COMÚN": 3357,
+    "VIOLENCIA COMUNITARIA": 95,
+    "VIOLENCIA INTRAFAMILIAR": 28,
+    "PSICOPATOLOGÍAS": 2,
+    "TRANSNACIONAL": 1,
+    "VIOLENCIA SEXUAL": 1,
+    "TERRORISMO": 1
+  }
+}

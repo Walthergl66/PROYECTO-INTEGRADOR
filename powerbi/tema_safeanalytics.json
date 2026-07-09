@@ -1,0 +1,7 @@
+{
+  "name": "SafeAnalytics EC",
+  "dataColors": ["#0F766E", "#12355B", "#D99A21", "#B42318", "#14B8A6", "#64748B"],
+  "background": "#F6F8FA",
+  "foreground": "#17202A",
+  "tableAccent": "#0F766E"
+}
