@@ -1,4 +1,15 @@
+# Entornos y cache de Python
 .venv/
 __pycache__/
 *.pyc
+
+# Configuracion local y de herramientas
 .streamlit/secrets.toml
+.claude/
+
+# Archivos temporales de Office (se generan al abrir .docx/.pptx/.xlsx)
+~$*
+
+# Basura del sistema operativo
+.DS_Store
+Thumbs.db

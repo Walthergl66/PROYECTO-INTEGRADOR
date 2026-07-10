@@ -13,13 +13,17 @@ El sistema permite responder:
 - Qué territorios requieren mayor priorización.
 - Qué impacto podría tener una reducción hipotética de la incidencia.
 
-## 2. Fuente de Datos
+## 2. Fuentes de Datos
 
-La fuente principal es el archivo:
+El proyecto combina dos fuentes:
 
-`mdi_homicidiosintencionalse_pm_2026_enero_mayo.xlsx`
+**Fuente principal (archivo real).** El archivo `mdi_homicidiosintencionalse_pm_2026_enero_mayo.xlsx`, publicado por el Ministerio del Interior (MDI). Contiene registros reales de enero a mayo de 2026 con variables territoriales, temporales, delictivas y sociodemográficas.
 
-El dataset contiene registros reales de enero a mayo de 2026 e incluye variables territoriales, temporales, delictivas y sociodemográficas.
+**Fuente complementaria (API pública).** La API del Banco Mundial (indicador `SP.POP.TOTL`), que entrega la población total de Ecuador en formato JSON, sin necesidad de clave de acceso. Se consume desde el módulo `src/etl/poblacion_api.py` y sirve para calcular la **tasa de homicidios por cada 100.000 habitantes**, una medida más justa que el conteo absoluto porque tiene en cuenta el tamaño de la población.
+
+> En palabras simples: el Excel nos dice *cuántos* homicidios hubo y *dónde*; la API nos dice *cuántas personas viven en el país*, y al combinarlos obtenemos una tasa comparable con estándares internacionales.
+
+Nota: el dataset del MDI también existe en el portal Datos Abiertos Ecuador (CKAN), que tiene una API, pero el portal bloquea el acceso a esa API (error 403). Por eso se usa el archivo oficial descargado y se complementa con la API del Banco Mundial, que sí funciona de forma abierta.
 
 ## 3. Estructura del Proyecto
 
@@ -89,10 +93,29 @@ calcula los indicadores principales:
 - Provincia y cantón con mayor incidencia.
 - Hora crítica.
 - Serie mensual.
+- Tasa por 100.000 habitantes (19,05 en el periodo; 46,06 anualizada).
+
+Además del "promedio" (tendencia central), el análisis calcula **medidas de dispersión** y **correlación**:
+
+**Medidas de dispersión.** Indican qué tan dispersos o parecidos son los datos. Se usa el coeficiente de variación (CV): cuanto más alto, más desigual es el dato.
+
+- Edad de las víctimas: CV 38,7% (dispersión moderada; la mayoría entre 23 y 39 años).
+- Incidencia diaria nacional: CV 32,5% (ocurren en promedio 23 homicidios por día, bastante estable).
+- Incidencia por provincia: CV 218,4% (dispersión extrema: la media es 151 casos pero la mediana solo 23, porque Guayas concentra 1.521 y otras apenas 4). Esto demuestra, con números, la fuerte concentración territorial.
+
+**Análisis de correlación.** Mide qué variables "se mueven juntas" usando el coeficiente de Pearson (de -1 a 1). Las relaciones más fuertes fueron:
+
+- Volumen total vs. incidencia del último mes: r = 0,99 (las provincias con más casos siguen altas).
+- Volumen total vs. cantones afectados: r = 0,91 (el problema se extiende a más cantones).
+- % de arma de fuego vs. edad promedio: r = -0,49 (donde predomina el arma de fuego, las víctimas son más jóvenes).
+
+Importante: **correlación no es causalidad**. Que dos cosas ocurran juntas no significa que una cause la otra.
 
 Los resultados se guardan en:
 
-`reports/eda_resultados.json`
+- `reports/eda_resultados.json` (KPIs, dispersión y correlación).
+- `reports/correlacion_provincias.csv` (matriz de correlación completa).
+- `reports/indicadores_provincia.csv` (indicadores numéricos por provincia).
 
 ## 7. Modelo Predictivo
 
@@ -100,17 +123,23 @@ El modelo se encuentra en:
 
 `src/models/entrenar_modelo.py`
 
-Se utiliza un baseline provincial ajustado por:
+Se entrenan y comparan **dos modelos** sobre la misma partición de datos (80% entrenamiento, 20% prueba):
 
-- Promedio histórico por provincia.
-- Día de semana.
-- Tendencia reciente.
+1. **Baseline provincial** (modelo desplegado): ajustado por promedio histórico por provincia, día de semana y tendencia reciente. Es simple y fácil de explicar.
+2. **Regresión Lineal** (scikit-learn): un algoritmo clásico de aprendizaje automático, usado como comparación.
 
-El modelo se evalúa con MAE y RMSE, y se guarda en:
+Ambos se evalúan con tres métricas: MAE y RMSE (miden el error) y R² (mide qué porcentaje del comportamiento explica el modelo):
 
-`models/modelo_incidencia_diaria.pkl`
+| Modelo | MAE | RMSE | R² |
+|---|---|---|---|
+| Baseline provincial | 1,539 | 2,621 | 0,533 |
+| Regresión Lineal | 1,547 | 2,623 | 0,532 |
 
-Este modelo es exploratorio y se usa para apoyar la priorización, no para tomar decisiones automáticas.
+**Conclusión clave:** los dos modelos rinden casi igual (R² 0,53 en ambos). Esto demuestra que usar un algoritmo más complejo no mejora el resultado con solo cinco meses de datos. Por eso se mantiene el baseline: da el mismo poder predictivo pero es más transparente, algo esencial en seguridad ciudadana.
+
+**Explicabilidad (XAI).** La Regresión Lineal permite ver cuánto pesa cada variable en la predicción. Por ejemplo, pertenecer a Guayas suma unos 8,3 homicidios diarios a la estimación. Estos pesos se visualizan en la pestaña Predictiva del dashboard.
+
+El modelo desplegado se guarda en `models/modelo_incidencia_diaria.pkl` y las métricas en `reports/modelo_resultados.json`. Es exploratorio: apoya la priorización, no toma decisiones automáticas.
 
 ## 8. Analítica Prescriptiva
 
@@ -137,25 +166,28 @@ La app se ejecuta con:
 streamlit run dashboard/app.py
 ```
 
-La aplicación incluye:
+La aplicación incluye nueve vistas:
 
-- Vista ejecutiva.
-- Riesgo territorial.
-- Simulador de escenarios.
-- Análisis geográfico.
-- Análisis temporal.
-- Caracterización del delito.
-- Vista predictiva.
-- Explorador de datos.
+- **Ejecutiva:** KPIs, tendencia mensual y prioridades. Incluye la tasa por 100.000 habitantes (calculada con la API del Banco Mundial).
+- **Riesgo territorial:** índice 0-100 por provincia/cantón con semáforo.
+- **Simulador de escenarios:** casos evitables ante una reducción hipotética.
+- **Análisis geográfico:** mapa, ranking de cantones y concentración por zona.
+- **Análisis temporal:** patrones por hora, día y mapa de calor.
+- **Caracterización del delito:** arma, motivación, sexo y edad.
+- **Predictiva:** comparación de modelos (baseline vs. Regresión Lineal con R²) y explicabilidad (peso de cada variable).
+- **Datos:** exploración y descarga de las tablas del modelo estrella.
+- **Metodología:** fuentes de datos (Excel + API), medidas de dispersión, mapa de calor de correlación y control de calidad.
 
 ## 10. Funcionalidades Clave
 
 - Filtros por provincia, mes y arma.
-- KPIs ejecutivos.
+- KPIs ejecutivos y tasa por 100.000 habitantes (API del Banco Mundial).
 - Alertas automáticas.
 - Mapa geográfico.
 - Ranking de provincias y cantones.
 - Mapa de calor temporal.
+- Medidas de dispersión y mapa de calor de correlación (pestaña Metodología).
+- Comparación de modelos (baseline vs. Regresión Lineal con R²) y explicabilidad XAI.
 - Índice de riesgo territorial.
 - Simulador de reducción de incidencia.
 - Tabla de recomendaciones.

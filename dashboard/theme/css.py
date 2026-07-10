@@ -13,6 +13,15 @@ def inyectar_css() -> None:
 html, body, [class*="css"], [data-testid="stAppViewContainer"] * {{
   font-family: 'Inter', 'Segoe UI', sans-serif;
 }}
+/* Excepcion: los iconos de Streamlit (expander, widgets) usan la fuente de
+   simbolos Material. Sin esto, el chevron se muestra como texto "arrow_right". */
+[data-testid="stIconMaterial"],
+span.material-icons, span.material-icons-outlined,
+.material-symbols-rounded, .material-symbols-outlined,
+[class*="material-icons"], [class*="material-symbols"] {{
+  font-family: 'Material Symbols Rounded', 'Material Symbols Outlined',
+    'Material Icons', 'Material Icons Outlined' !important;
+}}
 [data-testid="stAppViewContainer"] {{ background: {FONDO}; }}
 [data-testid="stHeader"] {{ background: transparent; }}
 [data-testid="stSidebar"] {{ background: linear-gradient(180deg, {AZUL}, #0B1F33); }}

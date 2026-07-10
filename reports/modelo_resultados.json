@@ -5,5 +5,36 @@
   "registros_prueba": 199,
   "mae": 1.539,
   "rmse": 2.621,
-  "nota": "Modelo exploratorio. Con cinco meses de datos reales debe usarse como senal de priorizacion, no como pronostico operativo definitivo."
+  "r2": 0.533,
+  "comparacion_modelos": [
+    {
+      "modelo": "Baseline provincial",
+      "mae": 1.539,
+      "rmse": 2.621,
+      "r2": 0.533
+    },
+    {
+      "modelo": "Regresion Lineal (scikit-learn)",
+      "mae": 1.547,
+      "rmse": 2.623,
+      "r2": 0.532
+    }
+  ],
+  "regresion_lineal": {
+    "mae": 1.547,
+    "rmse": 2.623,
+    "r2": 0.532,
+    "n_features": 32,
+    "coeficientes_top": {
+      "cat__provincia_GUAYAS": 8.277,
+      "cat__provincia_EL ORO": 1.475,
+      "cat__provincia_MANABÍ": 1.382,
+      "cat__provincia_LOS RÍOS": 1.158,
+      "cat__provincia_CARCHI": -1.141,
+      "cat__provincia_MORONA SANTIAGO": -0.92,
+      "cat__provincia_COTOPAXI": -0.92,
+      "cat__provincia_ZAMORA CHINCHIPE": -0.906
+    }
+  },
+  "nota": "Se compara el baseline explicable contra una Regresion Lineal. El baseline se mantiene como modelo desplegado por su claridad; ambos son exploratorios y deben usarse como senal de priorizacion, no como pronostico operativo definitivo."
 }

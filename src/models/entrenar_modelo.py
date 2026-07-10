@@ -1,8 +1,14 @@
-"""Modelo predictivo auditable de incidencia diaria por provincia.
+"""Modelos predictivos de incidencia diaria por provincia.
 
-Con solo enero-mayo 2026, se usa un baseline explicable: promedio historico por
-provincia ajustado por dia de semana y tendencia reciente. Evita dependencias
-pesadas y deja claro el alcance exploratorio del pronostico.
+Se entrenan y comparan dos enfoques sobre la misma particion temporal:
+
+1. Baseline provincial explicable: promedio historico por provincia ajustado por
+   dia de semana y tendencia reciente. Es el modelo desplegado por su claridad y
+   robustez con un horizonte temporal corto (enero-mayo 2026).
+2. Regresion Lineal (scikit-learn): algoritmo clasico de aprendizaje supervisado
+   que sirve como linea de comparacion y aporta la metrica R2.
+
+Ambos se evaluan con MAE, RMSE y R2 para justificar la eleccion metodologica.
 """
 
 from __future__ import annotations
@@ -12,6 +18,11 @@ import pickle
 from pathlib import Path
 
 import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder
 
 RAIZ = Path(__file__).resolve().parents[2]
 PROCESSED = RAIZ / "data" / "processed"
@@ -33,11 +44,23 @@ def preparar_dataset() -> pd.DataFrame:
     return diario.sort_values("fecha_infraccion")
 
 
-def entrenar(df: pd.DataFrame) -> tuple[dict, pd.DataFrame, dict]:
+def dividir_temporal(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Particion temporal 80/20 respetando el orden de las fechas."""
     split_date = df["fecha_infraccion"].quantile(0.8)
     train = df[df["fecha_infraccion"] <= split_date].copy()
     test = df[df["fecha_infraccion"] > split_date].copy()
+    return train, test
 
+
+def _metricas(y_true, y_pred) -> dict:
+    return {
+        "mae": round(float(mean_absolute_error(y_true, y_pred)), 3),
+        "rmse": round(float(mean_squared_error(y_true, y_pred) ** 0.5), 3),
+        "r2": round(float(r2_score(y_true, y_pred)), 3),
+    }
+
+
+def entrenar_baseline(train: pd.DataFrame, test: pd.DataFrame) -> tuple[dict, pd.DataFrame, dict]:
     media_global = float(train["homicidios"].mean())
     media_prov = train.groupby("provincia")["homicidios"].mean().to_dict()
     factor_dia = (train.groupby("dia_semana")["homicidios"].mean() / media_global).to_dict()
@@ -63,36 +86,89 @@ def entrenar(df: pd.DataFrame) -> tuple[dict, pd.DataFrame, dict]:
         return max(base * dia * trend, 0)
 
     test = test.copy()
-    test["prediccion"] = test.apply(predecir, axis=1)
-    if len(test):
-        mae = float((test["homicidios"] - test["prediccion"]).abs().mean())
-        rmse = float(((test["homicidios"] - test["prediccion"]) ** 2).mean() ** 0.5)
-    else:
-        mae = rmse = None
-
-    metricas = {
-        "modelo": "Baseline provincial ajustado por dia de semana y tendencia",
-        "objetivo": "homicidios diarios por provincia",
-        "registros_entrenamiento": int(len(train)),
-        "registros_prueba": int(len(test)),
-        "mae": round(mae, 3) if mae is not None else None,
-        "rmse": round(rmse, 3) if rmse is not None else None,
-        "nota": "Modelo exploratorio. Con cinco meses de datos reales debe usarse como senal de priorizacion, no como pronostico operativo definitivo.",
-    }
+    test["prediccion_baseline"] = test.apply(predecir, axis=1)
+    metricas = _metricas(test["homicidios"], test["prediccion_baseline"]) if len(test) else {}
     return modelo, test, metricas
+
+
+def entrenar_regresion_lineal(
+    train: pd.DataFrame, test: pd.DataFrame
+) -> tuple[Pipeline, pd.Series, dict]:
+    """Regresion Lineal sobre provincia, dia de semana, mes y tendencia temporal."""
+    train, test = train.copy(), test.copy()
+    fecha_min = train["fecha_infraccion"].min()
+    for d in (train, test):
+        d["dia_indice"] = (d["fecha_infraccion"] - fecha_min).dt.days
+
+    categoricas = ["provincia", "dia_semana"]
+    numericas = ["mes", "dia_indice"]
+    preproceso = ColumnTransformer(
+        [
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categoricas),
+            ("num", "passthrough", numericas),
+        ]
+    )
+    modelo = Pipeline([("prep", preproceso), ("reg", LinearRegression())])
+
+    X_cols = categoricas + numericas
+    modelo.fit(train[X_cols], train["homicidios"])
+    pred = pd.Series(modelo.predict(test[X_cols]), index=test.index).clip(lower=0)
+
+    metricas = _metricas(test["homicidios"], pred) if len(test) else {}
+
+    nombres = modelo.named_steps["prep"].get_feature_names_out()
+    coefs = modelo.named_steps["reg"].coef_
+    top = sorted(zip(nombres, coefs), key=lambda t: abs(t[1]), reverse=True)[:8]
+    metricas["n_features"] = int(len(nombres))
+    metricas["coeficientes_top"] = {str(n): round(float(c), 3) for n, c in top}
+    return modelo, pred, metricas
 
 
 if __name__ == "__main__":
     REPORTS.mkdir(parents=True, exist_ok=True)
     MODELS.mkdir(parents=True, exist_ok=True)
+
     data = preparar_dataset()
-    modelo, prueba, metricas = entrenar(data)
+    train, test = dividir_temporal(data)
+
+    modelo_base, test_base, met_base = entrenar_baseline(train, test)
+    _, pred_reg, met_reg = entrenar_regresion_lineal(train, test)
+    test_base["prediccion_regresion"] = pred_reg
+
+    resultados = {
+        "modelo": "Baseline provincial ajustado por dia de semana y tendencia",
+        "objetivo": "homicidios diarios por provincia",
+        "registros_entrenamiento": int(len(train)),
+        "registros_prueba": int(len(test)),
+        # Metricas del modelo desplegado (baseline)
+        "mae": met_base.get("mae"),
+        "rmse": met_base.get("rmse"),
+        "r2": met_base.get("r2"),
+        "comparacion_modelos": [
+            {"modelo": "Baseline provincial", **met_base},
+            {
+                "modelo": "Regresion Lineal (scikit-learn)",
+                "mae": met_reg.get("mae"),
+                "rmse": met_reg.get("rmse"),
+                "r2": met_reg.get("r2"),
+            },
+        ],
+        "regresion_lineal": met_reg,
+        "nota": (
+            "Se compara el baseline explicable contra una Regresion Lineal. El baseline se "
+            "mantiene como modelo desplegado por su claridad; ambos son exploratorios y deben "
+            "usarse como senal de priorizacion, no como pronostico operativo definitivo."
+        ),
+    }
+
     with (MODELS / "modelo_incidencia_diaria.pkl").open("wb") as fh:
-        pickle.dump(modelo, fh)
+        pickle.dump(modelo_base, fh)
     data.to_csv(PROCESSED / "dataset_modelo_diario.csv", index=False, encoding="utf-8-sig")
-    prueba.to_csv(REPORTS / "predicciones_prueba.csv", index=False, encoding="utf-8-sig")
+    test_base.to_csv(REPORTS / "predicciones_prueba.csv", index=False, encoding="utf-8-sig")
     (REPORTS / "modelo_resultados.json").write_text(
-        json.dumps(metricas, ensure_ascii=False, indent=2),
+        json.dumps(resultados, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
     print("Modelo entrenado: models/modelo_incidencia_diaria.pkl")
+    print(f"Baseline        -> MAE {met_base['mae']} | RMSE {met_base['rmse']} | R2 {met_base['r2']}")
+    print(f"Regresion Lineal-> MAE {met_reg['mae']} | RMSE {met_reg['rmse']} | R2 {met_reg['r2']}")

@@ -7,25 +7,33 @@ Proyecto integrador de Analítica de Negocios orientado a seguridad ciudadana. L
 ## Arquitectura
 
 ```text
-FUENTES                         ETL (Python)               MODELO ANALITICO             CONSUMO
-----------------------------    ------------------------   -------------------------   --------------------------
-Dataset homicidios Ecuador  ->  limpieza, tipado,       -> fact_homicidios          -> Dashboard Power BI
-Power BI (.pbix.zip)            validacion, calidad        dim_tiempo                -> Dashboard Streamlit
-Excel MDI enero-mayo 2026       enriquecimiento temporal   dim_geografia             -> Modelo predictivo
-                                 KPIs ejecutivos            dim_delito                -> Informe y pitch ejecutivo
+FUENTES                          ETL (Python)               MODELO ANALITICO            CONSUMO
+-----------------------------    ------------------------   ------------------------    --------------------------
+Excel MDI enero-mayo 2026    ->  limpieza, tipado,       -> fact_homicidios         -> Dashboard Power BI
+(fuente principal)               validacion, calidad        dim_tiempo               -> Dashboard Streamlit
+API Banco Mundial (poblacion)    enriquecimiento temporal   dim_geografia            -> Modelo predictivo + regresion
+(fuente complementaria)          KPIs y tasa por 100k       dim_delito               -> Informe, pitch y presentacion
+                                                            dim_victima
 ```
+
+### Fuentes de datos
+
+- **Principal (archivo real):** `mdi_homicidiosintencionalse_pm_2026_enero_mayo.xlsx`, dataset oficial del Ministerio del Interior (MDI) con 3.485 homicidios intencionales de enero a mayo de 2026.
+- **Complementaria (API publica):** [API del Banco Mundial](https://api.worldbank.org/v2/country/ECU/indicator/SP.POP.TOTL?format=json), indicador `SP.POP.TOTL` (poblacion total de Ecuador). Se consume desde `src/etl/poblacion_api.py` y se usa para calcular la **tasa de homicidios por 100.000 habitantes**. Cumple el requisito de utilizar al menos una API publica.
 
 ## Estructura del repositorio
 
 | Ruta | Contenido |
 |---|---|
-| `src/etl/` | Transformación del Excel real a esquema estrella |
-| `src/analytics/eda.py` | Estadística descriptiva, KPIs y resultados exploratorios |
-| `src/models/` | Modelo predictivo de incidencia mensual y recomendaciones estratégicas |
-| `dashboard/` | App Streamlit ejecutiva con Plotly |
+| `src/etl/transform_load.py` | Transformación del Excel real a esquema estrella |
+| `src/etl/poblacion_api.py` | Consumo de la API pública del Banco Mundial (población de Ecuador) |
+| `src/analytics/eda.py` | Estadística descriptiva y de dispersión, correlación, KPIs y tasa por 100k |
+| `src/models/entrenar_modelo.py` | Modelo baseline + Regresión Lineal (scikit-learn) con MAE, RMSE y R² |
+| `src/models/prescriptivo.py` | Índice de riesgo territorial y recomendaciones estratégicas |
+| `dashboard/` | App Streamlit ejecutiva con Plotly (9 vistas) |
 | `powerbi/` | Guía de medidas DAX, tema visual y alineación con el PBIX entregado |
-| `data/processed/` | Tablas listas para Power BI y Streamlit |
-| `reports/` | KPIs, métricas del modelo y recomendaciones |
+| `data/processed/` | Tablas del modelo estrella + caché de población de la API |
+| `reports/` | KPIs, dispersión, matriz de correlación, métricas del modelo y recomendaciones |
 | `models/` | Modelo entrenado en formato `pkl` |
 | `informe/` | Informe técnico, guion y presentación de defensa |
 | `docs/` | Explicación del proyecto y justificación del modelo predictivo |
@@ -57,9 +65,9 @@ La app contiene nueve vistas:
 - **Geográfico:** concentración por provincia, cantón y zona.
 - **Temporal:** patrones por mes, día y hora crítica.
 - **Caracterización:** tipo de arma, sexo, edad, lugar y presunta motivación.
-- **Predictiva:** estimación mensual de incidencia por provincia y nivel de riesgo.
+- **Predictiva:** incidencia estimada por provincia, comparación de modelos (baseline vs. Regresión Lineal con R²) y explicabilidad (XAI).
 - **Datos:** esquema estrella, calidad y descarga de tablas.
-- **Metodologia:** fuente, trazabilidad, modelo dimensional, alcance predictivo y control de calidad.
+- **Metodologia:** fuentes de datos (Excel + API), medidas de dispersión, matriz de correlación, modelo dimensional y control de calidad.
 
 ## Relación con el PBIX
 
@@ -79,7 +87,14 @@ Este repositorio complementa ese trabajo con una app reproducible, pipeline docu
 - **Cobertura territorial:** 23 provincias y 138 cantones afectados.
 - **Provincia con mayor incidencia:** Guayas.
 - **Canton con mayor incidencia:** Guayaquil.
-- **Arma predominante:** arma de fuego.
+- **Arma predominante:** arma de fuego (87,8% de los casos).
+- **Tasa por 100.000 habitantes:** 19,05 en el periodo; 46,06 anualizada (con población del Banco Mundial).
+
+## Analítica avanzada (fases 3 y 4)
+
+- **Medidas de dispersión (EDA):** desviación estándar, mediana y coeficiente de variación (CV) de edad, incidencia diaria e incidencia por provincia. El CV de 218% por provincia demuestra estadísticamente la concentración territorial.
+- **Análisis de correlación:** matriz de Pearson entre indicadores provinciales (`reports/correlacion_provincias.csv`). El volumen se asocia fuertemente con los cantones afectados (r=0,91) y la incidencia reciente (r=0,99). La correlación no implica causalidad.
+- **Modelado predictivo:** un baseline explicable (MAE 1,54 · RMSE 2,62 · **R² 0,53**) se compara contra una **Regresión Lineal** de scikit-learn (R² 0,53). Al obtener un desempeño equivalente, se mantiene el baseline por su transparencia. La pestaña Predictiva muestra la explicabilidad (peso de cada variable).
 
 ## Componentes ejecutivos agregados
 

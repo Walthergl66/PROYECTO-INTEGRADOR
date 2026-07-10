@@ -16,7 +16,14 @@ if str(RAIZ) not in sys.path:
 import streamlit as st
 
 from dashboard.components import renderizar_hero, tarjeta_kpi
-from dashboard.data import cargar_base, cargar_kpis, cargar_modelo, cargar_recomendaciones, cargar_tablas
+from dashboard.data import (
+    cargar_base,
+    cargar_kpis,
+    cargar_modelo,
+    cargar_poblacion,
+    cargar_recomendaciones,
+    cargar_tablas,
+)
 from dashboard.tabs import (
     renderizar_alertas,
     renderizar_caracterizacion,
@@ -43,6 +50,7 @@ df = cargar_base()
 cargar_kpis()
 metricas_modelo = cargar_modelo()
 recomendaciones = cargar_recomendaciones()
+poblacion = cargar_poblacion()
 
 renderizar_hero()
 
@@ -82,8 +90,26 @@ c1, c2, c3, c4, c5 = st.columns(5)
 tarjeta_kpi(c1, "Total homicidios", f"{total:,}".replace(",", "."), "Registros filtrados")
 tarjeta_kpi(c2, "Arma de fuego", f"{arma_fuego:.1f}%", "Participacion")
 tarjeta_kpi(c3, "Victimas hombres", f"{hombres:.1f}%", "Perfil predominante")
-tarjeta_kpi(c4, "Edad promedio", f"{edad:.1f}", "Anios")
+tarjeta_kpi(c4, "Edad promedio", f"{edad:.1f}", "Años")
 tarjeta_kpi(c5, "Provincia critica", prov_top, "Mayor incidencia")
+
+# Tasa por 100.000 habitantes usando poblacion de la API publica del Banco Mundial.
+# Se calcula a nivel nacional (dataset completo) y se anualiza porque el periodo
+# disponible es enero-mayo 2026.
+total_nacional = int(df["total_homicidios"].sum())
+dias_periodo = (df["fecha_infraccion"].max() - df["fecha_infraccion"].min()).days + 1
+tasa_anualizada = (total_nacional * 365 / dias_periodo) / poblacion["poblacion"] * 100_000
+hab_fmt = f"{poblacion['poblacion']:,}".replace(",", ".")
+st.markdown(
+    f"""
+<div class="note">
+  <b>Tasa nacional estimada:</b> {tasa_anualizada:.1f} homicidios por 100.000 habitantes/año
+  &nbsp;|&nbsp; Poblacion Ecuador: {hab_fmt} ({poblacion['años']})
+  &nbsp;|&nbsp; Fuente: {poblacion['fuente']}
+</div>
+""",
+    unsafe_allow_html=True,
+)
 
 st.markdown("### Alertas ejecutivas")
 renderizar_alertas(df_f)

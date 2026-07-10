@@ -1,0 +1,7 @@
+﻿,total_homicidios,pct_arma_fuego,pct_hombres,edad_promedio,cantones_afectados,homicidios_ultimo_mes
+total_homicidios,1.0,0.322,0.252,-0.074,0.906,0.993
+pct_arma_fuego,0.322,1.0,0.368,-0.487,0.268,0.331
+pct_hombres,0.252,0.368,1.0,-0.18,0.306,0.251
+edad_promedio,-0.074,-0.487,-0.18,1.0,0.046,-0.068
+cantones_afectados,0.906,0.268,0.306,0.046,1.0,0.929
+homicidios_ultimo_mes,0.993,0.331,0.251,-0.068,0.929,1.0

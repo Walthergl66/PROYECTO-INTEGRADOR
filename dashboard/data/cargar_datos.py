@@ -68,6 +68,25 @@ def cargar_recomendaciones() -> pd.DataFrame:
 
 
 @st.cache_data
+def cargar_poblacion() -> dict:
+    """Poblacion de Ecuador cacheada desde la API publica del Banco Mundial.
+
+    Lee el artefacto generado por el pipeline (src/etl/poblacion_api.py o el
+    EDA). Si no existe, entrega un valor de respaldo documentado para no romper
+    el dashboard cuando no hay conexion.
+    """
+    cache = PROCESSED / "poblacion_ecuador.json"
+    if cache.exists():
+        return json.loads(cache.read_text(encoding="utf-8"))
+    return {
+        "poblacion": 18_135_478,
+        "años": 2024,
+        "fuente": "Banco Mundial - valor de respaldo (SP.POP.TOTL)",
+        "origen": "fallback",
+    }
+
+
+@st.cache_data
 def cargar_tablas() -> dict[str, pd.DataFrame]:
     tablas = {}
     for path in sorted(PROCESSED.glob("*.csv")):
