@@ -17,6 +17,14 @@ FUENTE = RAIZ / "mdi_homicidiosintencionalse_pm_2026_enero_mayo.xlsx"
 RAW = RAIZ / "data" / "raw"
 PROCESSED = RAIZ / "data" / "processed"
 
+# Nombres en espanol, independientes del locale del sistema operativo.
+MESES_ES = {
+    1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril", 5: "Mayo", 6: "Junio",
+    7: "Julio", 8: "Agosto", 9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre",
+}
+# dayofweek de pandas: lunes = 0 ... domingo = 6.
+DIAS_ES = {0: "Lunes", 1: "Martes", 2: "Miercoles", 3: "Jueves", 4: "Viernes", 5: "Sabado", 6: "Domingo"}
+
 
 def _limpiar_texto(serie: pd.Series) -> pd.Series:
     return (
@@ -79,10 +87,10 @@ def transformar() -> dict[str, pd.DataFrame]:
     dim_tiempo["id_fecha"] = dim_tiempo["fecha"].dt.strftime("%Y%m%d").astype(int)
     dim_tiempo["anio"] = dim_tiempo["fecha"].dt.year
     dim_tiempo["mes"] = dim_tiempo["fecha"].dt.month
-    dim_tiempo["mes_nombre"] = dim_tiempo["fecha"].dt.month_name(locale="C")
+    dim_tiempo["mes_nombre"] = dim_tiempo["mes"].map(MESES_ES)
     dim_tiempo["dia"] = dim_tiempo["fecha"].dt.day
     dim_tiempo["dia_semana"] = dim_tiempo["fecha"].dt.dayofweek + 1
-    dim_tiempo["nombre_dia"] = dim_tiempo["fecha"].dt.day_name(locale="C")
+    dim_tiempo["nombre_dia"] = dim_tiempo["fecha"].dt.dayofweek.map(DIAS_ES)
     dim_tiempo["semana"] = dim_tiempo["fecha"].dt.isocalendar().week.astype(int)
 
     dim_geografia = (

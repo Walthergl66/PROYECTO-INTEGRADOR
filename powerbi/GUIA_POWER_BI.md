@@ -1,6 +1,9 @@
 # Guia Power BI - SafeAnalytics EC
 
-Esta guia complementa el archivo `Dashboards de criminalistica de homicidios.pbix.zip` y las tablas generadas en `data/processed/`.
+Esta guia complementa el archivo `powerbi/SafeAnalytics_EC.pbix` y las tablas reunidas en
+`powerbi/data/` (las 5 tablas del modelo estrella mas 4 reportes, y el libro combinado
+`SafeAnalytics_EC_datos.xlsx` con las 9 en hojas separadas, listo para importar de una
+sola vez). Para el paso a paso detallado de clics, ver `powerbi/PASO_A_PASO_POWER_BI.md`.
 
 ## Tablas recomendadas
 
@@ -9,8 +12,19 @@ Esta guia complementa el archivo `Dashboards de criminalistica de homicidios.pbi
 - `dim_geografia.csv`: provincia, canton, zona, distrito, circuito y subcircuito.
 - `dim_delito.csv`: tipo de muerte, arma, tipo de arma, lugar y motivacion.
 - `dim_victima.csv`: sexo, genero, etnia, nacionalidad e instruccion.
-- `reports/indicadores_provincia.csv` (opcional): indicadores numericos por provincia para analisis de correlacion.
-- `reports/correlacion_provincias.csv` (opcional): matriz de correlacion lista para visualizar como matriz/heatmap.
+- `indicadores_provincia.csv` (opcional): indicadores numericos por provincia para analisis de correlacion.
+- `correlacion_provincias.csv` (opcional): matriz de correlacion lista para visualizar como matriz/heatmap.
+
+### Tipos de dato que requieren atencion especial
+
+- **`id_geografia`** (en `fact_homicidios` y `dim_geografia`): debe quedar como **Texto**
+  en ambas tablas. Es un codigo geografico (definido asi desde el ETL,
+  `df["id_geografia"] = df["codigo_canton"].astype(str)`), no una cantidad; si queda como
+  Numero, Power BI le agrega separador de miles y se ve mal.
+- **`fecha_infraccion`** (en `fact_homicidios`): debe quedar como **Fecha**, no
+  "Fecha/hora". Esta columna nunca tuvo hora; si se marca como Fecha/hora, Power BI
+  muestra `12:00 AM` en todos los registros (no es un error, es que no hay otra hora
+  que mostrar). La hora real del suceso vive en la columna separada `hora` (0-23).
 
 ### Poblacion para la tasa por 100.000 habitantes
 
