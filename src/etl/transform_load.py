@@ -67,7 +67,7 @@ def transformar() -> dict[str, pd.DataFrame]:
     df["franja_horaria"] = pd.cut(
         df["hora"],
         bins=[-1, 5, 11, 17, 23],
-        labels=["Madrugada", "Manana", "Tarde", "Noche"],
+        labels=["Madrugada", "Mañana", "Tarde", "Noche"],
     ).astype("string")
     df["edad_num"] = _edad(df["edad"])
     df["latitud"] = _coord(df["coordenada_y"])

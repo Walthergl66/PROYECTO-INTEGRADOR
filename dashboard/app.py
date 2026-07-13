@@ -72,13 +72,34 @@ with st.sidebar:
         sorted(df["arma"].dropna().unique()),
         default=sorted(df["arma"].dropna().unique()),
     )
+    sexos = st.multiselect(
+        "Sexo de la víctima",
+        sorted(df["sexo"].dropna().unique()),
+        default=sorted(df["sexo"].dropna().unique()),
+    )
+    orden_franjas = ["Madrugada", "Mañana", "Tarde", "Noche"]
+    franjas_disponibles = [f for f in orden_franjas if f in df["franja_horaria"].unique()]
+    franjas = st.multiselect(
+        "Franja horaria",
+        franjas_disponibles,
+        default=franjas_disponibles,
+    )
     st.divider()
     st.caption("Datos reales del Excel MDI enero-mayo 2026. El modelo predictivo es exploratorio.")
 
-df_f = df[df["provincia"].isin(provincias) & df["mes"].isin(meses) & df["arma"].isin(armas)]
+df_f = df[
+    df["provincia"].isin(provincias)
+    & df["mes"].isin(meses)
+    & df["arma"].isin(armas)
+    & df["sexo"].isin(sexos)
+    & df["franja_horaria"].isin(franjas)
+]
 if df_f.empty:
     st.warning("No hay datos para los filtros seleccionados.")
     st.stop()
+
+with st.sidebar:
+    st.caption(f"Mostrando {len(df_f):,} de {len(df):,} registros".replace(",", "."))
 
 total = int(df_f["total_homicidios"].sum())
 arma_fuego = (df_f["arma"] == "ARMA DE FUEGO").mean() * 100
@@ -114,34 +135,40 @@ st.markdown(
 st.markdown("### Alertas ejecutivas")
 renderizar_alertas(df_f)
 
+# 6 pestanas agrupadas por tipo de analitica, siguiendo la progresion de madurez:
+# Descriptiva -> Diagnostica -> Predictiva -> Prescriptiva -> Soporte.
+# Las que comparten tipo se fusionan en una pestana con sub-pestanas internas.
 tabs = st.tabs(
     [
         "Ejecutivo",
-        "Riesgo territorial",
-        "Simulador",
-        "Geografico",
-        "Temporal",
         "Caracterizacion",
+        "Geografico y Temporal",
         "Predictiva",
-        "Datos",
-        "Metodologia",
+        "Riesgo y Simulador",
+        "Datos y Metodologia",
     ]
 )
 with tabs[0]:
     renderizar_ejecutivo(df_f, recomendaciones[recomendaciones["provincia"].isin(provincias)])
 with tabs[1]:
-    renderizar_riesgo(df_f)
-with tabs[2]:
-    renderizar_simulador(df_f)
-with tabs[3]:
-    renderizar_geografico(df_f)
-with tabs[4]:
-    renderizar_temporal(df_f)
-with tabs[5]:
     renderizar_caracterizacion(df_f)
-with tabs[6]:
+with tabs[2]:
+    sub_geo, sub_temp = st.tabs(["Geografico", "Temporal"])
+    with sub_geo:
+        renderizar_geografico(df_f)
+    with sub_temp:
+        renderizar_temporal(df_f)
+with tabs[3]:
     renderizar_predictivo(df_f, metricas_modelo, recomendaciones[recomendaciones["provincia"].isin(provincias)])
-with tabs[7]:
-    renderizar_datos(cargar_tablas())
-with tabs[8]:
-    renderizar_metodologia(metricas_modelo)
+with tabs[4]:
+    sub_riesgo, sub_sim = st.tabs(["Riesgo territorial", "Simulador"])
+    with sub_riesgo:
+        renderizar_riesgo(df_f)
+    with sub_sim:
+        renderizar_simulador(df_f)
+with tabs[5]:
+    sub_datos, sub_metodo = st.tabs(["Datos", "Metodologia"])
+    with sub_datos:
+        renderizar_datos(cargar_tablas())
+    with sub_metodo:
+        renderizar_metodologia(metricas_modelo)

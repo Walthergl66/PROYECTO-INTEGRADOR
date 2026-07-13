@@ -57,17 +57,17 @@ python src/models/prescriptivo.py
 streamlit run dashboard/app.py
 ```
 
-La app contiene nueve vistas:
+La app contiene 6 pestañas principales, ordenadas segun la progresion de madurez
+analitica (Descriptiva -> Diagnostica -> Predictiva -> Prescriptiva -> Soporte). Las
+pestañas que comparten tipo de analitica se agrupan con sub-pestañas internas para
+mantener la navegacion compacta sin perder contenido:
 
-- **Ejecutivo:** KPIs, evolución mensual, provincias críticas y resumen de decisión.
-- **Riesgo territorial:** índice 0-100 por provincia o cantón con semáforo Alto/Medio/Bajo.
-- **Simulador:** estimación de casos evitables bajo escenarios de reducción de incidencia.
-- **Geográfico:** concentración por provincia, cantón y zona.
-- **Temporal:** patrones por mes, día y hora crítica.
-- **Caracterización:** tipo de arma, sexo, edad, lugar y presunta motivación.
-- **Predictiva:** incidencia estimada por provincia, comparación de modelos (baseline vs. Regresión Lineal con R²) y explicabilidad (XAI).
-- **Datos:** esquema estrella, calidad y descarga de tablas.
-- **Metodologia:** fuentes de datos (Excel + API), medidas de dispersión, matriz de correlación, modelo dimensional y control de calidad.
+- **Ejecutivo** *(Descriptiva)*: KPIs, evolución mensual, provincias críticas y resumen de decisión.
+- **Caracterización** *(Descriptiva/Diagnóstica)*: tipo de arma, sexo, edad, lugar y presunta motivación.
+- **Geográfico y Temporal** *(Diagnóstica)*: sub-pestaña *Geográfico* (concentración por provincia, cantón y zona) + sub-pestaña *Temporal* (patrones por mes, día y hora crítica).
+- **Predictiva** *(Predictiva)*: incidencia estimada por provincia, comparación de modelos (baseline vs. Regresión Lineal con R²) y explicabilidad (XAI).
+- **Riesgo y Simulador** *(Prescriptiva)*: sub-pestaña *Riesgo territorial* (índice 0-100 con semáforo Alto/Medio/Bajo) + sub-pestaña *Simulador* (casos evitables bajo escenarios de reducción de incidencia).
+- **Datos y Metodología** *(Soporte)*: sub-pestaña *Datos* (esquema estrella, calidad y descarga de tablas) + sub-pestaña *Metodología* (fuentes de datos, dispersión, correlación, modelo dimensional y control de calidad).
 
 ## Relación con el PBIX
 

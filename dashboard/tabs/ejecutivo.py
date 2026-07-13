@@ -7,7 +7,7 @@ from dashboard.theme import AMBAR, TEAL
 
 def renderizar_ejecutivo(df: pd.DataFrame, recomendaciones: pd.DataFrame) -> None:
     st.markdown(
-        '<div class="note">Vista para direccion: incidencia acumulada, tendencia mensual y territorios que requieren priorizacion.</div>',
+        '<div class="note">Incidencia acumulada y tendencia mensual.</div>',
         unsafe_allow_html=True,
     )
     mensual = df.groupby(["mes", "mes_nombre"], as_index=False)["total_homicidios"].sum()
@@ -35,24 +35,5 @@ def renderizar_ejecutivo(df: pd.DataFrame, recomendaciones: pd.DataFrame) -> Non
     fig.update_layout(height=390, showlegend=False)
     col2.plotly_chart(fig, width="stretch")
 
-    st.subheader("Prioridades estrategicas")
-    top = recomendaciones.sort_values("total_homicidios", ascending=False).head(5)
-    cols = st.columns(5)
-    for col, (_, row) in zip(cols, top.iterrows()):
-        col.markdown(
-            f"""
-<div class="risk-card">
-  <strong>{row['provincia']}</strong><br>
-  {int(row['total_homicidios'])} casos<br>
-  <span style="color:{AMBAR};font-weight:700">{row['accion']}</span>
-</div>
-""",
-            unsafe_allow_html=True,
-        )
-
-    st.download_button(
-        "Descargar resumen ejecutivo CSV",
-        top.to_csv(index=False).encode("utf-8-sig"),
-        file_name="resumen_ejecutivo_safeanalytics.csv",
-        mime="text/csv",
-    )
+    
+    
